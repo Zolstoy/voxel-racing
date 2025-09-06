@@ -1,0 +1,45 @@
+---
+# options: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+BasedOnStyle: Google
+IndentWidth: 4
+ColumnLimit: 120
+SpaceAfterCStyleCast: true
+UseTab: Never
+AllowShortIfStatementsOnASingleLine: false
+AlignTrailingComments: true
+SpacesBeforeTrailingComments: 3
+AlwaysBreakAfterReturnType: TopLevelDefinitions
+AlignConsecutiveMacros: Consecutive
+UseCRLF: false
+BreakConstructorInitializers: BeforeComma
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterClass: true
+    AfterControlStatement: true
+    AfterEnum: true
+    AfterFunction: true
+    AfterNamespace: false
+    SplitEmptyFunction: false
+IndentPPDirectives: BeforeHash
+PPIndentWidth: 1
+AlwaysBreakTemplateDeclarations: Yes
+SortIncludes: true
+AllowShortFunctionsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+PackConstructorInitializers: Never
+AlignAfterOpenBracket: Align
+AllowShortCompoundRequirementOnASingleLine: false
+InsertNewlineAtEOF: true
+AlignConsecutiveDeclarations:
+    Enabled: true
+    AcrossEmptyLines: false
+    AcrossComments: true
+AlignConsecutiveAssignments:
+    Enabled: true
+    AcrossEmptyLines: false
+    AcrossComments: true
+FixNamespaceComments: true
+WrapNamespaceBodyWithEmptyLines: Always
+BreakBinaryOperations: RespectPrecedence
+RemoveEmptyLinesInUnwrappedLines: true
+IncludeBlocks: Regroup
