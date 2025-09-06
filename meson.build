@@ -13,11 +13,13 @@ common_cpp_args += '-DASIO_STANDALONE'
 argparse = dependency('argparse')
 websocket = dependency('websocketpp')
 asio = dependency('asio')
+json = dependency('nlohmann_json')
 
 dependencies = [
   argparse,
   websocket,
   asio,
+  json
 ]
 
 server = executable('voxelracing-server',
