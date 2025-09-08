@@ -52,7 +52,7 @@ void
 handler(std::mutex& mtx, server& server, websocketpp::connection_hdl hdl, std::shared_ptr<asio::steady_timer> timer,
         const asio::error_code& error)
 {
-    std::cout << "TICK" << std::endl;
+    // std::cout << "TICK" << std::endl;
 
     if (!error)
     {
@@ -95,6 +95,7 @@ main()
 #endif
         echo_server.clear_access_channels(websocketpp::log::alevel::frame_payload);
 
+        echo_server.set_error_channels(websocketpp::log::elevel::none);
         // Initialize Asio
         echo_server.init_asio();
 

@@ -3,7 +3,7 @@ extends Node
 var socket: WebSocketPeer = null
 var others = {}
 
-var player = null
+var player: Node3D = null
 
 func _ready():
 	player = get_node_or_null("../Player")
@@ -32,7 +32,10 @@ func _process(_delta):
 		if variant.has("PlayerState"):
 			var coords = variant["PlayerState"]["position"]
 			player.position = Vector3(coords[0], coords[1], coords[2])
-			#set_position(Vector3(coords[0], coords[1], coords[2]))
+			if player.is_processing() == false:
+				player.set_process(true)
+				player.set_physics_process(true)
+				player.set_process_input(true)
 		elif variant.has("OthersState"):
 			var others_update = variant["OthersState"] as Array
 			for other_player in others_update:
