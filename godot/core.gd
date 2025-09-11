@@ -4,6 +4,7 @@ var socket: WebSocketPeer = null
 var others = {}
 
 var player: Node3D = null
+var timer = 0.0
 
 func _ready():
 	player = get_node_or_null("../Player")
@@ -13,6 +14,18 @@ func _ready():
 	connect_to_server("127.0.0.1", 9002)
 	
 func _process(_delta):
+	timer += _delta
+	# ping every second
+	if timer >= 1.0:
+		timer = 0.0
+		if socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
+			socket.put_packet("ping".to_utf8_buffer())
+		else:
+			printerr("Socket not open")
+			get_tree().quit()
+	if socket == null:
+		return
+
 	socket.poll()
 	
 	var socket_state = socket.get_ready_state()

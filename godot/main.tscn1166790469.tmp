@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://ws7atjhd1kcr"]
+
+[ext_resource type="Script" uid="uid://ub8pcl5ayfpd" path="res://core.gd" id="1_ig7tw"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ig7tw"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Core" type="Node" parent="."]
+script = ExtResource("1_ig7tw")
+
+[node name="Box" type="Node3D" parent="."]
+
+[node name="CSGPolygon3D" type="CSGPolygon3D" parent="Box"]
+transform = Transform3D(8.68802, 0, 0, 0, 0.870177, 0, 0, 0, 13.4313, -4.42113, -1.47259, 5.25594)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Box"]
+transform = Transform3D(12.1145, 0, 0, 0, -5.29541e-07, 0.0690774, 0, -12.1145, -3.01947e-09, 0, 0, 0)
+shape = SubResource("BoxShape3D_ig7tw")
+
+[node name="Player" type="Node3D" parent="." groups=["player"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5358, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Player"]

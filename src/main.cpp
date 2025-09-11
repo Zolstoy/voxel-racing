@@ -30,6 +30,7 @@ class client
         : server_(s)
         , hdl_(hdl)
         , server_mtx_(mtx)
+        , timer_(std::make_shared<asio::steady_timer>(s.get_io_service()))
     {}
 
     void on_tick(const asio::error_code& error)
@@ -54,13 +55,19 @@ class client
             std::lock_guard<std::mutex> lock(server_mtx_);
             server_.send(hdl_, welcome_message, websocketpp::frame::opcode::text);
         }
-        wait();
+        next();
     }
 
-    void wait()
+    void next()
     {
-        timer_->expires_at(std::chrono::steady_clock::now() + std::chrono::seconds(1));
+        timer_->expires_at(timer_->expiry() + std::chrono::seconds(1));
         timer_->async_wait(bind(&client::on_tick, this, std::placeholders::_1));
+    }
+
+    void send(std::string const& message)
+    {
+        std::lock_guard<std::mutex> lock(server_mtx_);
+        server_.send(hdl_, message, websocketpp::frame::opcode::text);
     }
 };
 
@@ -73,10 +80,23 @@ on_message(client_container clients, std::mutex& mtx, websocketpp::connection_hd
     auto message = msg->get_payload();
 
     nlohmann::json j = nlohmann::json::parse(message);
-
     try
     {
         // server_->send(hdl, msg->get_payload(), msg->get_opcode());
+        if (j.contains("action"))
+        {
+            std::string action = j["action"];
+            if (action == "ping")
+            {
+                nlohmann::json response;
+                response["action"]       = "pong";
+                std::string response_str = response.dump();
+
+                std::lock_guard<std::mutex> lock(mtx);
+                clients[hdl]->send(response_str);
+            }
+        }
+
     } catch (websocketpp::exception const& e)
     {
         std::cout << "Echo failed because: "
@@ -94,11 +114,11 @@ main()
     try
     {
 #ifndef NDEBUG
-        echo_server.set_access_channels(websocketpp::log::alevel::all);
+        echo_server.set_access_channels(websocketpp::log::alevel::none);
 #endif
         echo_server.clear_access_channels(websocketpp::log::alevel::frame_payload);
 
-        echo_server.set_error_channels(websocketpp::log::elevel::all);
+        echo_server.set_error_channels(websocketpp::log::elevel::none);
 
         echo_server.init_asio();
 
@@ -108,7 +128,7 @@ main()
             auto client_p =
                 clients.insert(std::make_pair(hdl, std::make_shared<client>(echo_server, hdl, mtx))).first->second;
 
-            client_p->wait();
+            client_p->next();
         });
 
         echo_server.set_close_handler([&](websocketpp::connection_hdl hdl) {
@@ -125,8 +145,8 @@ main()
 
         echo_server.start_accept();
 
-        for (int i = 0; i < std::thread::hardware_concurrency() - 1; ++i)
-            std::thread([&]() { echo_server.run(); }).detach();
+        // for (int i = 0; i < std::thread::hardware_concurrency() - 1; ++i)
+        // std::thread([&]() { echo_server.run(); }).detach();
         echo_server.run();
 
     } catch (websocketpp::exception const& e)
