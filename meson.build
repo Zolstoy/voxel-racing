@@ -14,6 +14,7 @@ argparse = dependency('argparse')
 websocket = dependency('websocketpp')
 asio = dependency('asio')
 json = dependency('nlohmann_json')
+gtest = dependency('gtest')
 
 dependencies = [
   argparse,
@@ -22,10 +23,30 @@ dependencies = [
   json
 ]
 
-server = executable('voxelracing-server',
-  ['src/main.cpp'],
+libvoxelracing = static_library('voxelracing',
+  ['src/lib.cpp'],
   dependencies : dependencies,
-  include_directories : include_directories('src/'),
+  include_directories : include_directories('include/voxelracing/', 'src/'),
   cpp_args : common_cpp_args,
   override_options: override_args,
 )
+
+server = executable('voxelracing-server',
+  ['src/bin/main.cpp'],
+  dependencies : dependencies,
+  include_directories : include_directories('include/'),
+  cpp_args : common_cpp_args,
+  override_options: override_args,
+  link_with : libvoxelracing,
+)
+
+test_basics = executable('test_basics',
+  ['src/tests/basics.cpp'],
+  dependencies: dependencies + gtest,
+  include_directories : include_directories('include/'),
+  cpp_args : common_cpp_args,
+  override_options: override_args,
+  link_with : libvoxelracing,
+)
+
+test('basics', test_basics)

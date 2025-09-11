@@ -105,7 +105,7 @@ on_message(client_container clients, std::mutex& mtx, websocketpp::connection_hd
 }
 
 int
-main()
+start()
 {
     std::mutex       mtx;
     server           echo_server;
